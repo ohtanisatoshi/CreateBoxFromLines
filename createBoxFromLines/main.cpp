@@ -45,17 +45,32 @@ void createBox(vector<Line> hlines, vector<Line> vlines, vector<Rect> *rect) {
         for(int h2 = h1+1; h2 < hlines.size(); h2++) {
             // loop of horizontal lines
             Line hline2 = hlines[h2];
+            int i;
+            for (i = h1+1; i < h2; i++) {
+                Line hLineToCheck = hlines[i];
+                if (hLineToCheck.getX1() <= hline2.getX1() && hline2.getX2() <= hLineToCheck.getX2()) {
+                    break;
+                }
+            }
+            if (i < h2) {
+                break;
+            }
             
             for (int v1 = 0; v1 < vlines.size()-1; v1++) {
                 Line vline1 = vlines[v1];
                 for (int v2 = v1+1; v2 < vlines.size(); v2++) {
+                    Line vline2 = vlines[v2];
                     map<int, int>::iterator it = match_vlines.find(v1);
                     if (it != match_vlines.end() && it->second == v2) {
                         // to avoid duplicate
-                        continue;
+                        long x, y;
+                        if (getCrossPoint(hline2, vline2, &x, &y)) {
+                            break;
+                        } else {
+                            continue;
+                        }
                     }
                     
-                    Line vline2 = vlines[v2];
                     long x1;
                     long y1;
                     long x2;
@@ -78,6 +93,12 @@ void createBox(vector<Line> hlines, vector<Line> vlines, vector<Rect> *rect) {
                                 map<int, int>::iterator it = match_vlines.find(i);
                                 if (it == match_vlines.end() || it->second != i+1) {
                                     break;
+                                } else {
+                                    long x, y;
+                                    Line vLineToCheck = vlines[i+1];
+                                    if (getCrossPoint(hline2, vLineToCheck, &x, &y) == false) {
+                                        break;
+                                    }
                                 }
                             }
                             if (i == v2) {
@@ -106,18 +127,18 @@ int main(int argc, const char * argv[]) {
     vector<Line> hlines;
     vector<Line> vlines;
     
-    Line hline1 = Line(10,100,110,100);
+    Line hline1 = Line(10,10,30,10);
     hlines.push_back(hline1);
-    Line hline2(10,200,110,200);
+    Line hline2(20,20,30,20);
     hlines.push_back(hline2);
-    Line hline3(10,210,110,210);
+    Line hline3(10,30,30,30);
     hlines.push_back(hline3);
     
-    Line vline1(20,80,20,220);
+    Line vline1(10,10,10,30);
     vlines.push_back(vline1);
-    Line vline2(90,80,90,220);
+    Line vline2(20,10,20,30);
     vlines.push_back(vline2);
-    Line vline3(100,80,100,220);
+    Line vline3(30,10,30,30);
     vlines.push_back(vline3);
     
     vector<Rect> rects;
